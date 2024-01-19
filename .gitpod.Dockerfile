@@ -6,14 +6,14 @@ USER gitpod
 RUN sudo apt-get update && \
     sudo apt-get install -y postgresql postgresql-contrib
 
-# PostgreSQL Initialization (if needed)
-# RUN sudo service postgresql start && \
-#     sudo service postgresql stop
-
-# Create user and database
+# Initialize PostgreSQL data directory and start PostgreSQL service
 RUN sudo service postgresql start && \
-    sudo -u postgres psql -c "CREATE USER gitpod WITH SUPERUSER PASSWORD 'gitpod';" && \
-    sudo -u postgres createdb gitpod && \
+    sudo service postgresql stop
+
+# Create a PostgreSQL role named `gitpod` with `gitpod` as the password and then create a database `gitpod` owned by the `gitpod` role.
+RUN sudo service postgresql start && \
+    sudo -u postgres psql -c "CREATE ROLE gitpod WITH LOGIN SUPERUSER PASSWORD 'gitpod';" && \
+    sudo -u postgres createdb gitpod -O gitpod && \
     sudo service postgresql stop
 
 # Start PostgreSQL service
